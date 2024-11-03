@@ -70,3 +70,36 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Add this CSS to your global styles (e.g., styles.css) */
+.range {
+  -webkit-appearance: none; /* Remove default styling */
+  appearance: none;
+  width: 100%;
+  height: 8px; /* Height of the track */
+  background: #000; /* Background color of the track */
+  border-radius: 5px; /* Rounded edges */
+}
+
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Remove default styling */
+  appearance: none;
+  width: 16px; /* Width of the thumb */
+  height: 16px; /* Height of the thumb */
+  border-radius: 50%; /* Rounded thumb */
+  background: #ec4899; /* Color of the thumb */
+  cursor: pointer; /* Change cursor on hover */
+}
+
+.range::-moz-range-thumb {
+  width: 16px; /* Width of the thumb */
+  height: 16px; /* Height of the thumb */
+  border-radius: 50%; /* Rounded thumb */
+  background: #ec4899; /* Color of the thumb */
+  cursor: pointer; /* Change cursor on hover */
+}
+
+/* Track color for Firefox */
+.range::-moz-range-track {
+  background: #000; /* Background color of the track */
+}

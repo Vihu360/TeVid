@@ -8,7 +8,8 @@ import Link from 'next/link';
 
 const Dashboard = () => {
 
-	const [videoList, setVideoList] = useState([]);
+	const [videoList, ] = useState([]);  // use setVidList later on 
+
 
 	return (
 		<div className=''>
