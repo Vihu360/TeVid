@@ -7,11 +7,16 @@ import {
 	IconLock,
 	IconUser,
 	IconArrowRight,
-	IconUserCircle
+	IconUserCircle,
+	IconLoaderQuarter
 } from '@tabler/icons-react'
 import Link from 'next/link'
+import axios, { AxiosError } from 'axios'
+import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
 
 const AuthPage = () => {
+
 	const [isSignUp, setIsSignUp] = useState(false)
 	const [formData, setFormData] = useState({
 		firstName: '',
@@ -19,12 +24,92 @@ const AuthPage = () => {
 		email: '',
 		password: ''
 	})
+	const [isSubmitting, setIsSubmitting] = useState(false)
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault()
-		// Handle form submission
-		console.log(formData)
-	}
+	const { toast } = useToast()
+	const router = useRouter();
+
+	const resetPassword = () => {
+		setFormData(prev => ({
+			...prev,
+			password: ''
+		}));
+	};
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		setIsSubmitting(true);
+		try {
+			if (isSignUp) {
+				const signUpResponse = await axios.post("/api/SignUp", {
+					firstName: formData.firstName,
+					lastName: formData.lastName,
+					email: formData.email,
+					password: formData.password
+				});
+
+				console.log(signUpResponse.data)
+
+				toast({
+					title: "Success",
+					description: signUpResponse.data.message,
+				});
+
+				router.replace(`/verify/${formData.email}`);
+
+			} else {
+
+				const email = formData.email;
+				const password = formData.password;
+
+				console.log(email, password)
+
+				const signInResponse = await axios.post("/api/SignIn", { email, password });
+
+				if (signInResponse.data.success) {
+					toast({
+						title: "Success",
+						description: signInResponse.data.message,
+					});
+					router.replace('/dashboard');
+				}
+
+			}
+		} catch (error) {
+			const axiosError = error as AxiosError;
+			let errorMessage = "There was an issue with the request, the admin has been notified.";
+
+			// Handle different types of error responses
+			if (axiosError.response?.data && typeof axiosError.response.data === 'object') {
+				const errorData = axiosError.response.data as { message?: string, error?: string };
+				errorMessage = errorData.message || errorData.error || errorMessage;
+
+				// reset password field if it is incorrect
+
+				if (
+					errorMessage.toLowerCase().includes('incorrect password') ||
+					errorMessage.toLowerCase().includes('incorrect email or password')
+				) {
+					resetPassword();
+				}
+
+
+			} else if (typeof axiosError.response?.data === 'string') {
+				errorMessage = axiosError.response.data;
+			}
+
+			toast({
+				title: "Error",
+				description: errorMessage,
+				variant: "destructive",
+			});
+		}
+		finally {
+			setIsSubmitting(false);
+		}
+
+	};
+
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFormData({
@@ -119,7 +204,7 @@ const AuthPage = () => {
                                  transition-all duration-300 pl-10"
 												placeholder="Doe"
 											/>
-											<IconUserCircle className="absolute left-3 top-3.5 text-gray-400" size={20} />
+											<IconUserCircle className="absolute left-3 top-3.5 text-gray-400" size={23} />
 										</div>
 									</div>
 								</div>
@@ -181,9 +266,10 @@ const AuthPage = () => {
 								className="w-full bg-pink-600 text-white py-3 rounded-lg font-semibold
                          hover:bg-pink-700 transition-colors duration-300 flex items-center
                          justify-center gap-2"
-							>
-								{isSignUp ? "Create Account" : "Sign In"}
-								<IconArrowRight size={20} />
+							> {isSubmitting ?
+									<IconLoaderQuarter className="animate-spin" size={20} />
+							 : isSignUp ? "Create Account" : "Sign In"}
+								{ isSubmitting ? "" : <IconArrowRight size={20} /> }
 							</button>
 						</form>
 

@@ -1,16 +1,34 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { verifyRefreshToken } from "@/configs/auth-utilis";
+import { NextResponse, NextRequest } from "next/server";
 
-const isProtectedRoute = createRouteMatcher(["/dashboard(.*)", "/forum(.*)"]);
+export async function middleware(req: NextRequest) {
+  const token = req.cookies.get("refreshToken")?.value;
+  const url = req.nextUrl;
 
-export default clerkMiddleware((auth, req) => {
-  if (isProtectedRoute(req)) auth().protect();
-});
+	// If the token exists and the user is trying to access signup, signin, or verify
 
-export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
-    "/(api|trpc)(.*)",
-  ],
-};
+
+	const verifyToken = verifyRefreshToken(token as string);
+
+	console.log(verifyToken)
+
+  if (verifyToken) {
+    if (
+      url.pathname.startsWith("/signup") ||
+      url.pathname.startsWith("/verify")
+    ) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+    return NextResponse.next();
+  }
+
+  // If the token doesn't exist and the user is trying to access the main application
+
+  if (
+    (!verifyToken && url.pathname.startsWith("/projects")) ||
+    url.pathname.startsWith("/dashboard") ||
+    url.pathname.startsWith("/create-new") 
+  ) {
+    return NextResponse.redirect(new URL("/signup", req.url));
+  }
+}

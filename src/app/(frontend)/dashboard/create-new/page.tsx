@@ -204,6 +204,8 @@ const CreateNewVideo = () => {
 			// Set the images list after all requests are completed
 			setImagesList(images);
 
+			console.log(imagesList);
+
 		} catch (error) {
 			console.error("Error generating images:", error);
 		} finally {

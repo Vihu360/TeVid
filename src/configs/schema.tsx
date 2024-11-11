@@ -1,12 +1,16 @@
-import { pgTable, boolean, serial, varchar, json } from "drizzle-orm/pg-core"
-
+import { pgTable, boolean, serial, varchar, json, timestamp } from "drizzle-orm/pg-core"
 
 export const Users = pgTable('users', {
 	id: serial('id').primaryKey(),
-	name: varchar('name').notNull(),
+	firstName: varchar('name').notNull(),
+	lastName: varchar('lastname').notNull(),
 	email: varchar('email').notNull(),
-	image: varchar('image').notNull(),
-	subscrption: boolean('subscrption').notNull().default(false),
+	password: varchar('password').notNull(),
+	isVerified: boolean('isVerified').notNull().default(false),
+	refreshToken: varchar('refreshToken'),
+	verifyCode: varchar('verifyCode'),
+	verifyCodeExpires: timestamp('verifyCodeExpires'),
+	subs: varchar('subs').notNull().default('free'),
 })
 
 export const videoData = pgTable('videoData', {
