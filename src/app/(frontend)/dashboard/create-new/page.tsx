@@ -1,40 +1,14 @@
-"use client"
+"use client";
 
-import { Button } from '@/components/ui/button'
-import React, { useState } from 'react'
-import { IconArrowNarrowRightDashed } from '@tabler/icons-react'
-import SelectStyle from './_components/SelectStyle'
+import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
+import SelectStyle from "./_components/SelectStyle";
+import { PageOne } from "./_components/PageOne";
+import axios, { AxiosError } from 'axios';
+import { Skeleton } from "@/components/ui/skeleton";
 
-// Constants
-const VIDEO_LENGTHS = [30, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-const PRESET_PROMPTS = [
-	{ id: 0, text: 'Technology Explainer', prompt: 'explain the technology of modern era with the challenges in mind' },
-	{ id: 1, text: 'Motivation Freaks', prompt: 'motivation video for fitness freaks' },
-	{ id: 2, text: 'Science Simplified', prompt: 'simplified explanation of scientific concepts' },
-	{ id: 3, text: 'Travel Motivation', prompt: 'inspiring travel destinations and experiences' },
-	{ id: 4, text: 'Bedtime Stories', prompt: 'calming bedtime stories for better sleep' },
-	{ id: 5, text: 'Fashion Diaries', prompt: 'latest fashion trends and style tips' }
-]
 
-// Button Component
 
-interface PresetButtonProps {
-	text: string;
-	isActive: boolean;
-	onClick: () => void;
-}
-
-const PresetButton: React.FC<PresetButtonProps> = ({ text, isActive, onClick }) => (
-	<Button
-		onClick={onClick}
-		className={`p-3 text-gray-700 rounded-xl border border-gray-400 hover:border-gray-600
-      ${isActive ? "bg-pink-600 text-gray-100 hover:bg-pink-600" : "bg-gray-100 hover:bg-gray-200"}`}
-	>
-		{text}
-	</Button>
-)
-
-// Step Indicator Component
 const StepIndicator = ({ step }: { step: number }) => (
 	<div className='w-full flex'>
 		<div className='w-1/2 flex justify-end items-center'>
@@ -47,126 +21,202 @@ const StepIndicator = ({ step }: { step: number }) => (
 	</div>
 )
 
-// Page One Component
-const PageOne = ({ videoLengthIndex, setVideoLengthIndex, activeButtonIndex, setActiveButtonIndex, promptValue, setPromptValue, onNext }: {
-	videoLengthIndex: number;
-	setVideoLengthIndex: React.Dispatch<React.SetStateAction<number>>;
-	activeButtonIndex: number | null;
-	setActiveButtonIndex: React.Dispatch<React.SetStateAction<number | null>>;
-	promptValue: string;
-	setPromptValue: React.Dispatch<React.SetStateAction<string>>;
-	onNext: () => void;
-}) => {
-	const handlePresetClick = (index: number) => {
-		setActiveButtonIndex(index)
-		setPromptValue(PRESET_PROMPTS[index].prompt)
-	}
-
-	return (
-		<div className="md:w-5/6 md:h-2/3 w-full py-3 md:px-5 flex flex-col gap-2 rounded-xl md:border-2 md:shadow-lg md:shadow-gray-600 border-black">
-			<label htmlFor="prompt">Prompt</label>
-			<div className="flex flex-col justify-center items-center gap-2 w-full">
-				<textarea
-					className="w-full h-32 p-2 border-gray-300 border rounded-xl"
-					placeholder="motivation video for fitness freaks"
-					id="prompt"
-					value={promptValue}
-					onChange={(e) => setPromptValue(e.target.value)}
-				/>
-
-				<div className='flex flex-col gap-3 items-center justify-center'>
-					<div className='grid grid-cols-2 md:grid-cols-3 gap-2 items-center justify-between'>
-						{PRESET_PROMPTS.slice(0, 3).map((preset) => (
-							<PresetButton
-								key={preset.id}
-								text={preset.text}
-								isActive={activeButtonIndex === preset.id}
-								onClick={() => handlePresetClick(preset.id)}
-							/>
-						))}
-					</div>
-
-					<div className='grid grid-cols-2 md:grid-cols-3 gap-2 items-center justify-between'>
-						{PRESET_PROMPTS.slice(3).map((preset) => (
-							<PresetButton
-								key={preset.id}
-								text={preset.text}
-								isActive={activeButtonIndex === preset.id}
-								onClick={() => handlePresetClick(preset.id)}
-							/>
-						))}
-					</div>
-				</div>
-
-				<div className="md:w-1/2 mt-3 flex flex-col items-center gap-3">
-					<label htmlFor="videoLength">
-						Video Length: {VIDEO_LENGTHS[videoLengthIndex]} {VIDEO_LENGTHS[videoLengthIndex] === 30 ? 'seconds' : 'minutes'}
-					</label>
-					<input
-						required
-						type="range"
-						id="videoLength"
-						min="0"
-						max={VIDEO_LENGTHS.length - 1}
-						value={videoLengthIndex}
-						step="1"
-						className="cursor-pointer range"
-						onChange={(e) => setVideoLengthIndex(Number(e.target.value))}
-					/>
-				</div>
-
-				<Button onClick={onNext} className='mt-2 flex'>
-					Next
-					<IconArrowNarrowRightDashed stroke={2} />
-				</Button>
-
-				<StepIndicator step={1} />
-			</div>
-		</div>
-	)
-}
-
 // Page Two Component
-const PageTwo = ({ onUserSelect }: { onUserSelect: (name: string, value: string) => void }) => (
+const PageTwo = ({
+	onUserSelect,
+	handleOnClick,
+	loading
+}: {
+	onUserSelect: (name: string, value: string) => void;
+	handleOnClick: () => void;
+	loading: boolean
+}) => (
 
 	<div className="md:w-5/6 md:h-2/3 w-full py-3 md:px-5 flex flex-col gap-2 rounded-xl md:border-2 md:shadow-lg md:shadow-gray-600 border-black">
-		<SelectStyle onUserSelect={onUserSelect} />
+		{loading ? (
+			<div className="flex flex-col items-center justify-center p-16 gap-8">
 
-		<div className='flex items-center justify-center pt-2'>
-			<Button className='bg-pink-600 hover:bg-pink-700 text-gray-100 w-full md:w-auto'>
-				Submit
-			</Button>
-		</div>
+				<div className="flex items-center space-x-4 justify-center">
+					<Skeleton className="h-12 w-12 rounded-full" />
+					<div className="space-y-2">
+						<Skeleton className="h-4 w-[250px]" />
+						<Skeleton className="h-4 w-[200px]" />
+					</div>
+				</div>
 
-		<StepIndicator step={2} />
+				<p className="text-center">Hold on ! This won&apos;t take long, <span className="text-pink-600 font-medium">PINKY PROMISE</span></p>
+			</div>
+		) :
+
+			(
+				<>
+					<SelectStyle onUserSelect={onUserSelect} />
+
+					<div className="flex items-center justify-center pt-2">
+						<Button onClick={handleOnClick} className="bg-pink-600 hover:bg-pink-700 text-gray-100 w-full md:w-auto">
+							Submit
+						</Button>
+					</div>
+
+					<StepIndicator step={2} />
+				</>
+
+			)}
 	</div>
-)
+);
 
 // Main Component
 const CreateNewVideo = () => {
-	const [videoLengthIndex, setVideoLengthIndex] = useState(0)
-	const [activeButtonIndex, setActiveButtonIndex] = useState<number | null>(null);
-	const [next2, setNext2] = useState(false)
-	const [promptValue, setPromptValue] = useState('')
-
-	const [propsData, setPropsData] = useState([])
-
+	const [videoLengthIndex, setVideoLengthIndex] = useState(0);
+	const [activeButtonIndex, setActiveButtonIndex] = useState<number | null>(
+		null
+	);
+	const [next2, setNext2] = useState(false);
+	const [promptValue, setPromptValue] = useState("");
+	const [propsData, setPropsData] = useState<{ [key: string]: string }>({});
+	const [loading, setLoading] = useState(false);
+	const [imagesList, setImagesList] = useState<string[]>([]);
 	const onHandleChange = (name: string, value: string) => {
-		console.log("props val", name, value)
 
-		setPropsData(prev => ({
+		setPropsData((prev) => ({
 			...prev,
-			[name]: value
-		}))
+			[name]: value,
+		}));
+	};
+
+	// Api Call to Voice generator
+
+	const fetchVoiceThroughAi = async (combinedString: string) => {
+
+		try {
+
+
+			console.log(combinedString)
+
+			const response = await axios.post("/api/GetVideoVoice", {
+				promptText: combinedString
+			})
+
+			const publicUrl = response.data.downloadAudioFileSupabase.data.publicUrl;
+
+			fetchCaptionThroughAi(publicUrl)
+
+
+		} catch (error) {
+
+			const axiosError = error as AxiosError;
+			console.log(axiosError.response?.data);
+
+		}
 	}
 
-	console.log(propsData)
+
+	// Api call to the video script generator
+
+	const fetchVideoScriptThroughAi = async () => {
+
+		setLoading(true)
+
+		const videoDuration = `${videoLengthIndex === 0 ? 30 : videoLengthIndex} ${videoLengthIndex === 0 ? "seconds" : "minutes"}`
+
+		const promptValueWithDuration = 'write a script to generate ' + videoDuration + ' video on topic : ' + promptValue + ' along with ai image prompt in a ' + propsData.selectStyle + ' format for each scene and give me result in JSON with Image prompt and contain text as field. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated'
+
+		console.log(promptValueWithDuration);
+
+		try {
+			const response = await axios.post("/api/GetVideoScript", {
+				prompt: promptValueWithDuration
+			})
+
+			const data = response.data.result
+
+			interface ResultItem {
+				text: string;
+			}
+
+			const combinedString = data.map((item: ResultItem) => item.text).join(' ');
+
+			console.log("combined string", combinedString)
+
+			fetchVoiceThroughAi(combinedString);
+
+			fetchImagethroughAi(data);
+
+		} catch (error) {
+
+			const axiosError = error as AxiosError
+			console.log(axiosError.response?.data);
+
+		}
+	}
+
+	// Api call to the caption generator
+
+
+	const fetchCaptionThroughAi = async (publicUrl: string) => {
+
+		setLoading(true)
+
+		const fileUrl = publicUrl
+
+		try {
+			const response = await axios.post("/api/GetCaption", {
+				audioFileUrl: fileUrl
+			})
+
+			console.log(response.data.transcript.words)
+
+		} catch (error) {
+
+			const axiosError = error as AxiosError
+			console.log(axiosError.response?.data);
+
+		}
+
+	}
+
+	// Api call to image generation
+
+	interface DataItem {
+		text: string;
+		image_prompt: string;
+	}
+
+	const fetchImagethroughAi = async (data: DataItem[]) => {
+		console.log("data", data);
+
+		let images: string[] = [];
+
+		try {
+			// Use Promise.all to make concurrent requests for all image prompts
+			const responses = await Promise.all(
+				data.map((item) =>
+					axios.post("/api/GetAiImage", { prompt: item.image_prompt })
+				)
+			);
+
+			console.log("response", responses);
+
+			// Extract the result from each response
+			images = responses.map(response => response.data.publicUrl);
+			console.log("Generated images:", images);
+
+			// Set the images list after all requests are completed
+			setImagesList(images);
+
+		} catch (error) {
+			console.error("Error generating images:", error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
 
 	return (
 		<div>
 			<div className="md:p-5 flex items-center justify-center">
 				{next2 ? (
-					<PageTwo onUserSelect={onHandleChange} />
+					<PageTwo onUserSelect={onHandleChange} handleOnClick={fetchVideoScriptThroughAi} loading={loading} />
 				) : (
 					<PageOne
 						videoLengthIndex={videoLengthIndex}
@@ -180,7 +230,7 @@ const CreateNewVideo = () => {
 				)}
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-export default CreateNewVideo
+export default CreateNewVideo;

@@ -26,7 +26,7 @@ const SelectStyle: React.FC<SelectStyleProps> = ({ onUserSelect }) => {
 
 	const handleStyleSelect = (styleName: string) => {
 		setSelectedStyle(styleName)
-		onUserSelect('style select', styleName)
+		onUserSelect('selectStyle', styleName)
 	}
 
 	return (

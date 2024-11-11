@@ -21,7 +21,7 @@ export	const chatSession = model.startChat({
 			{
 				role: "user",
 				parts: [
-					{ text: "write a script to generate video on topic : Interesting historical story along with ai image prompt in a realistic format for each scene and give me result in JSON with Image prompt and contain text as field \n" },
+					{ text: "write a script to generate 30 second video on topic : Interesting historical story along with ai image prompt in a realistic format for each scene and give me result in JSON with Image prompt and contain text as field \n" },
 				],
 			},
 			{
