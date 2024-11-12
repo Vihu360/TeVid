@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { User } from './types';
+import { jwtVerify } from 'jose';
+
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || 'your_access_token_secret';
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || 'your_refresh_token_secret';
@@ -36,9 +38,11 @@ export const verifyAccessToken = (token: string): User | null => {
 };
 
 // Function to verify Refresh Token
-export const verifyRefreshToken = (token: string): User | null => {
+export const verifyRefreshToken = async (token: string): Promise<User | null> => {
 	try {
-		return jwt.verify(token, refreshTokenSecret) as User;
+		const secret = new TextEncoder().encode(refreshTokenSecret);
+		const { payload } = await jwtVerify(token, secret);
+		return payload as unknown as User;
 	} catch (error) {
 		console.log("verification refresh token err :", error)
 		return null;

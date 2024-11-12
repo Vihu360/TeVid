@@ -71,7 +71,9 @@ const AuthPage = () => {
 						title: "Success",
 						description: signInResponse.data.message,
 					});
+
 					router.replace('/dashboard');
+					
 				}
 
 			}
