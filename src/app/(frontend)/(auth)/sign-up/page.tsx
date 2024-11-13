@@ -73,7 +73,7 @@ const AuthPage = () => {
 					});
 
 					router.replace('/dashboard');
-					
+
 				}
 
 			}
@@ -84,7 +84,7 @@ const AuthPage = () => {
 			// Handle different types of error responses
 			if (axiosError.response?.data && typeof axiosError.response.data === 'object') {
 				const errorData = axiosError.response.data as { message?: string, error?: string };
-				errorMessage = errorData.message || errorData.error || errorMessage;
+				errorMessage = errorData.message ?? errorData.error ?? errorMessage;
 
 				// reset password field if it is incorrect
 

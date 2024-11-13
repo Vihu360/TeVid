@@ -13,11 +13,15 @@ export const Users = pgTable('users', {
 	subs: varchar('subs').notNull().default('free'),
 })
 
+
 export const videoData = pgTable('videoData', {
 	id: serial('id').primaryKey(),
-	script: json('videoScript').notNull(),
+	videoScript: json('videoScript').notNull(),  // Changed from 'script'
 	audioFileUrl: varchar('audioFileUrl').notNull(),
-	captions: varchar('captions').notNull(),
-	imageList: varchar('imageList').array(),
+	captions: json('captions').notNull(),
+	imageList: varchar('imageList').array(),  // Changed from 'imagesList'
 	createdby: varchar('createdby').notNull(),
-})
+});
+
+// TypeScript type for the data structure
+export type VideoDataType = typeof videoData.$inferInsert;

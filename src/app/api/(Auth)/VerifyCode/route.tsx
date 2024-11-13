@@ -12,6 +12,8 @@ export async function POST(req: NextRequest) {
 
 		const { email, code } = await req.json();
 
+		console.log(" email and code ", email, code)
+
 		const existingUser = await db.select().from(Users).where(eq(Users.email, email)).execute();
 
 		if (existingUser[0].isVerified) {
@@ -62,7 +64,7 @@ export async function POST(req: NextRequest) {
 		const response = NextResponse.json(
 			{
 				success: true,
-				message: "Login Successful",
+				message: "Account verified Successfully",
 			},
 			{ status: 200 }
 		)

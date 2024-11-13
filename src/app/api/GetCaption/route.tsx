@@ -21,9 +21,8 @@ export async function POST(request: NextRequest) {
 			audio: FILE_URL
 		}
 
-			const transcript = await client.transcripts.transcribe(data);
-		console.log(transcript.words);
-
+		const transcript = await client.transcripts.transcribe(data);
+		
 		return NextResponse.json({ message: 'Audio generated and uploaded to Supabase', transcript }, { status: 200 });
 
 

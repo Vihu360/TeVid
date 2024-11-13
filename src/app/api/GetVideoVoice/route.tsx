@@ -14,6 +14,9 @@ export async function POST(request: NextRequest) {
 	const { promptText } = await request.json();
 
 	try {
+
+		console.log("prompt text in audio gen",promptText);
+
 		const result = await generateVoice(promptText);
 		const audioUrl = result.audioFile;
 

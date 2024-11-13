@@ -31,7 +31,7 @@ export default function Home() {
 							<IconArrowRightDashed stroke={2} />
 						</Button>
 					</Link>
-					<p className="text-xs text-gray-600">no credit card required</p>
+					<p className="text-xs text-gray-600 text-center">no credit card required</p>
 				</div>
 
 				<div className="flex gap-2 bg-black w-full py-14 text-white">

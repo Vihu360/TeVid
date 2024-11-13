@@ -11,7 +11,6 @@ export async function POST(request: NextRequest) {
 
 		const result = await chatSession.sendMessage(prompt)
 
-		console.log(result);
 
 		console.log(result.response.text())
 
