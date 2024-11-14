@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { db } from "@/configs/db";
 import { videoData } from "@/configs/schema";
 import { verifyRefreshToken } from "@/configs/auth-utilis";
-import { NextRequest } from "next/server";
+import PlayerDialog from "../_components/PlayerDialog";
 
 // Define TypeScript interfaces
 interface VideoScript {
@@ -79,7 +79,8 @@ const PageTwo = ({
 	</div>
 );
 
-const CreateNewVideo = (req: NextRequest) => {
+
+const CreateNewVideo = () => {
 	const [videoLengthIndex, setVideoLengthIndex] = useState(0);
 	const [activeButtonIndex, setActiveButtonIndex] = useState<number | null>(null);
 	const [next2, setNext2] = useState(false);
@@ -93,6 +94,8 @@ const CreateNewVideo = (req: NextRequest) => {
 		imageList: [],
 		createdby: ""
 	});
+	const [playVideo, setPlayVideo] = useState(true);
+	const [videoId, setVideoId] = useState<number | null>(5);
 
 	const onHandleChange = (name: string, value: string) => {
 		setPropsData((prev) => ({
@@ -125,7 +128,7 @@ const CreateNewVideo = (req: NextRequest) => {
 		setLoading(true);
 
 		const videoDuration = `${videoLengthIndex === 0 ? 30 : videoLengthIndex} ${videoLengthIndex === 0 ? "seconds" : "minutes"}`;
-		const promptValueWithDuration = `write a script to generate ${videoDuration} video on topic : ${promptValue} along with ai image prompt in a ${propsData.selectStyle} format for each scene and give me result in JSON with Image prompt and contain text as field. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated`;
+		const promptValueWithDuration = `write a script to generate ${videoDuration} video on topic : ${promptValue} along with ai image prompt in a ${propsData.selectStyle} format for each scene and give me result in JSON with Image prompt and contain text as field. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok`;
 
 		try {
 			const response = await axios.post("/api/GetVideoScript", {
@@ -199,18 +202,24 @@ const CreateNewVideo = (req: NextRequest) => {
 	const setVideoDataToDb = async () => {
 		try {
 
-			const token = req.cookies.get("refreshToken")?.value ?? "";
+			const response = await axios.get('/api/Token');
+
+			const token = response.data.token
+
 			const findUserEmail = await verifyRefreshToken(token);
 
-			const userEmail = findUserEmail?.email || "";
+			const userEmail = findUserEmail?.email ?? "";
 
-			await db.insert(videoData).values({
+			const result = await db.insert(videoData).values({
 				videoScript: allData.videoScript,
 				audioFileUrl: allData.audioUrl,
 				captions: allData.caption,
 				imageList: allData.imageList,
 				createdby: userEmail
-			});
+			}).returning({ id: videoData.id });
+
+			setVideoId(result[0].id);
+			setPlayVideo(true);
 
 			console.log('Successfully inserted data into database', allData);
 		} catch (error) {
@@ -245,7 +254,9 @@ const CreateNewVideo = (req: NextRequest) => {
 						onNext={() => setNext2(true)}
 					/>
 				)}
+
 			</div>
+			{playVideo && videoId != null && <PlayerDialog playVideo={playVideo} videoId={videoId} />}
 		</div>
 	);
 };

@@ -27,6 +27,7 @@ export const generateRefreshToken = (user: User): string => {
 	);
 };
 
+
 // Function to verify Access Token
 export const verifyAccessToken = (token: string): User | null => {
 	try {

@@ -7,7 +7,9 @@ import { eq } from "drizzle-orm";
 const publicRoutes = ['/sign-up', '/verify'];
 const protectedRoutes = ['/projects', '/dashboard', '/create-new'];
 
+
 export async function middleware(req: NextRequest) {
+
 	const token = req.cookies.get("refreshToken")?.value;
 	const url = req.nextUrl;
 
@@ -31,6 +33,7 @@ export async function middleware(req: NextRequest) {
 	}
 
 	try {
+
 		// Verify the refresh token
 		const verifiedToken = await verifyRefreshToken(token);
 
