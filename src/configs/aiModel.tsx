@@ -7,11 +7,13 @@ const model = genAI.getGenerativeModel({
 	model: "gemini-1.5-flash",
 });
 
+console.log("api key hitting", apiKey)
+
 const generationConfig = {
 	temperature: 1,
 	topP: 0.95,
 	topK: 40,
-	maxOutputTokens: 8192,
+	maxOutputTokens: 100000,
 	responseMimeType: "application/json",
 };
 

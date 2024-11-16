@@ -1,6 +1,6 @@
 import React from 'react'
-import Header from './_components/Header'
 import Sidenav from './_components/Sidenav'
+import Header from './_components/Header'
 
 
 
@@ -11,15 +11,13 @@ interface DashboardLayoutProps {
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({children}) => {
 	return (
-		<div className='w-screen h-screen bg-[#FCF7ED]'>
-			<div className='hidden md:block h-screen fixed mt-[85px] w-64'>
+		<div className='w-full min-h-screen bg-[#000]'>
+			<div className='hidden md:block h-screen fixed w-64 overflow-hidden'>
 				<Sidenav/>
 			</div>
-			<div className=' '>
-				<Header />
-				<div className='md:ml-64 p-2 md:p-10 overflow-hidden'>
+			<div className='md:ml-64 overflow-hidden h-full '>
+				<Header/>
 			{children}
-				</div>
 			</div>
 		</div>
 	)

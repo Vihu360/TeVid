@@ -37,7 +37,7 @@ const StepIndicator = ({ step }: { step: number }) => (
 		<div className='w-1/2 flex justify-end items-center'>
 			<div className='w-1/2 border-2 border-pink-600' />
 		</div>
-		<p className='p-3 md:w-28 w-32'>step {step}/2</p>
+		<p className='p-3 md:w-28 w-32 text-white'>step {step}/2</p>
 		<div className='w-1/2 flex justify-start items-center'>
 			<div className='w-1/2 border-2 border-pink-600' />
 		</div>
@@ -47,34 +47,68 @@ const StepIndicator = ({ step }: { step: number }) => (
 const PageTwo = ({
 	onUserSelect,
 	handleOnClick,
-	loading
+	loading,
+	onNext
 }: {
 	onUserSelect: (name: string, value: string) => void;
 	handleOnClick: () => void;
-	loading: boolean;
+loading: boolean;
+		onNext: () => void
 }) => (
-	<div className="md:w-5/6 md:h-2/3 w-full py-3 md:px-5 flex flex-col gap-2 rounded-xl md:border-2 md:shadow-lg md:shadow-gray-600 border-black">
+	<div className="w-full flex flex-col gap-2 rounded-xl md:border-2 bg-[#181C14] border-white px-4 md:px-10 h-full overflow-hidden">
 		{loading ? (
-			<div className="flex flex-col items-center justify-center p-16 gap-8">
-				<div className="flex items-center space-x-4 justify-center">
-					<Skeleton className="h-12 w-12 rounded-full" />
-					<div className="space-y-2">
-						<Skeleton className="h-4 w-[250px]" />
-						<Skeleton className="h-4 w-[200px]" />
+			<div className="flex flex-col items-center justify-center min-h-[90vh] p-8 gap-12">
+
+				{/* Multiple skeleton rows for content */}
+				<div className="w-full max-w-lg space-y-8">
+					<div className="flex items-center space-x-4">
+						<Skeleton className="h-12 w-12 rounded-full bg-gray-700/50" />
+						<div className="space-y-2 flex-1">
+							<Skeleton className="h-4 w-3/4 bg-gray-700/50" />
+							<Skeleton className="h-4 w-1/2 bg-gray-700/50" />
+						</div>
+					</div>
+
+					<div className="space-y-3">
+						<Skeleton className="h-4 w-full bg-gray-700/50" />
+						<Skeleton className="h-4 w-5/6 bg-gray-700/50" />
+						<Skeleton className="h-4 w-4/6 bg-gray-700/50" />
+						<Skeleton className="h-4 w-full bg-gray-700/50" />
 					</div>
 				</div>
-				<p className="text-center">Hold on ! This won&apos;t take long, <span className="text-pink-600 font-medium">PINKY PROMISE</span></p>
+
+
+
+				{/* Loading message */}
+				<div className="space-y-2 text-center">
+					<div className="">
+						<div className="flex items-center justify-center gap-2 text-gray-400">
+							<span className="inline-block w-3 h-3 bg-pink-600 rounded-full animate-bounce" />
+							<span className="inline-block w-3 h-3 bg-pink-600 rounded-full animate-bounce delay-150" />
+							<span className="inline-block w-3 h-3 bg-pink-600 rounded-full animate-bounce delay-300" />
+							<span className="inline-block w-3 h-3 bg-pink-600 rounded-full animate-bounce delay-500" />
+						</div>
+					</div>
+					<p className="text-lg text-white">Crafting your video masterpiece</p>
+					<p className="text-sm text-gray-400">
+						Hold on! This won&apos;t take long, <span className="text-pink-600 font-medium ">PINKY PROMISE</span>
+					</p>
+				</div>
 			</div>
 		) : (
-			<>
-				<SelectStyle onUserSelect={onUserSelect} />
-				<div className="flex items-center justify-center pt-2">
-					<Button onClick={handleOnClick} className="bg-pink-600 hover:bg-pink-700 text-gray-100 w-full md:w-auto">
-						Submit
-					</Button>
+				<div className="w-full flex flex-col min-h-full">
+				<div className="flex-grow">
+						<SelectStyle onUserSelect={onUserSelect} onNext={onNext} />
 				</div>
-				<StepIndicator step={2} />
-			</>
+				<div className="sticky bottom-0 bg-[#181C14] py-4">
+					<div className="flex items-center justify-center">
+						<Button onClick={handleOnClick} className="bg-[#FFE5CF] hover:bg-[#FFD5B8] text-black w-full md:w-2/6">
+							Submit
+						</Button>
+					</div>
+					<StepIndicator step={2} />
+				</div>
+			</div>
 		)}
 	</div>
 );
@@ -94,12 +128,12 @@ const CreateNewVideo = () => {
 		imageList: [],
 		createdby: ""
 	});
-	const [playVideo, setPlayVideo] = useState(true);
-	const [videoId, setVideoId] = useState<number | null>(5);
+	const [playVideo, setPlayVideo] = useState(false);
+	const [videoId, setVideoId] = useState<number | null>();
 
 	const onHandleChange = (name: string, value: string) => {
-		setPropsData((prev) => ({
-			...prev,
+		console.log("name an dvalue ",name, value)
+		setPropsData(() => ({
 			[name]: value,
 		}));
 	};
@@ -125,13 +159,31 @@ const CreateNewVideo = () => {
 	};
 
 	const fetchVideoScriptThroughAi = async () => {
+
+		let promptValueWithDuration = ""
+
+		let videoDuration
+		if (videoDuration === 0) {
+			videoDuration = "30-40"
+		} else {
+			videoDuration = "40-60"
+		}
+
 		setLoading(true);
 
-		const videoDuration = `${videoLengthIndex === 0 ? 30 : videoLengthIndex} ${videoLengthIndex === 0 ? "seconds" : "minutes"}`;
-		const promptValueWithDuration = `write a script to generate ${videoDuration} video on topic : ${promptValue} along with ai image prompt in a ${propsData.selectStyle} format for each scene and give me result in JSON with Image prompt and contain text as field. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok`;
+		console.log("type of propsData",typeof propsData);
 
-		try {
-			const response = await axios.post("/api/GetVideoScript", {
+		if ('AI Image' in propsData) {
+			console.log("ai image")
+			 promptValueWithDuration = `write a script to generate ${videoDuration} video on topic : ${promptValue} along with ai image prompt in a ${propsData.selectStyle} format for each scene and give me result in JSON with Image prompt and contain text as field. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok`;
+		}
+		else {
+			console.log("gameplay")
+			promptValueWithDuration = `write a script to generate ${videoDuration} seconds video on topic : ${promptValue} give me result in JSON with  and that text as field. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok`;
+		}
+
+			try {
+				const response = await axios.post("/api/GetVideoScript", {
 				prompt: promptValueWithDuration
 			});
 
@@ -153,7 +205,8 @@ const CreateNewVideo = () => {
 
 		} catch (error) {
 			const axiosError = error as AxiosError;
-			console.log(axiosError.response?.data);
+				console.log(axiosError.response?.data);
+				setLoading(false);
 		}
 	};
 
@@ -235,13 +288,14 @@ const CreateNewVideo = () => {
 	}, [allData]);
 
 	return (
-		<div>
-			<div className="md:p-5 flex items-center justify-center">
+		<div className="">
+			<div className=" md:p-8 flex items-center justify-center ">
 				{next2 ? (
 					<PageTwo
 						onUserSelect={onHandleChange}
 						handleOnClick={fetchVideoScriptThroughAi}
 						loading={loading}
+						onNext={() => setNext2(false)}
 					/>
 				) : (
 					<PageOne

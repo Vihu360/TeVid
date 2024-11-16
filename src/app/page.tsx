@@ -116,14 +116,14 @@ export default function Home() {
 
 						<div className="flex md:gap-10 justify-end">
 
-							<div className=" w-52 h-72">
+							{/* <div className=" w-52 h-72">
 								<Image src="/video1.gif" width={100} height={100} alt="video2" className="w-full h-full object-cover " />
 
 							</div>
 
 							<div className=" w-52 h-72 ">
 								<Image src="/video2.gif" width={100} height={100} alt="video2" className="w-full h-full object-cover " />
-							</div>
+							</div> */}
 
 						</div>
 

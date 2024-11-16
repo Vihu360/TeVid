@@ -52,13 +52,14 @@ const PlayerDialog = ({ playVideo, videoId }: PlayDialogType) => {
 	useEffect(() => {
 
 		setOpenDialog(true);
-		getVideoDataFromDb();
+		if (videoId) {
+			getVideoDataFromDb();
+		}
 
 	}, [playVideo])
 
 	const getVideoDataFromDb = async () => {
 
-		console.log(" video id ",videoId)
 
 		const response = await db.select().from(videoData).where(eq(videoData.id, videoId)).execute();
 
@@ -70,9 +71,18 @@ const PlayerDialog = ({ playVideo, videoId }: PlayDialogType) => {
 			createdby: response[0].createdby,
 		};
 
+
 		setAllVideoData(responseVideoData);
 
 	}
+
+	console.log(" all video data", allVideoData)
+
+	const fps = 30
+
+	const totalDuration = allVideoData.caption.length > 0
+		? allVideoData.caption[allVideoData.caption.length - 1].end / 1000 * fps
+		: 1;
 
 	return (
 		<Dialog open={openDialog}>
@@ -84,13 +94,15 @@ const PlayerDialog = ({ playVideo, videoId }: PlayDialogType) => {
 					<div className='md:flex gap-10 justify-between items-start '>
 						<Player
 							component={RemotionVideo}
-							durationInFrames={120}
+							durationInFrames={Number(totalDuration.toFixed(0))}
 							compositionWidth={280}
 							compositionHeight={450}
 							fps={30}
 							controls={true}
 							inputProps={
-								{...allVideoData}
+								{
+									...allVideoData,
+								}
 							}
 						/>
 						<div className=' w-1/2'>

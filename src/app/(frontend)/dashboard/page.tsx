@@ -14,10 +14,10 @@ const Dashboard = () => {
 	return (
 		<div className=''>
 
-			<div className='flex justify-between items-center '>
-				<h2 className='text-semibold text-2xl'>Dashboard</h2>
+			<div className='flex justify-between items-center md:px-16 px-7  pt-8 '>
+				<h2 className='text-semibold text-2xl text-white underline underline-offset-8'>Dashboard</h2>
 					<Link href='/dashboard/create-new'>
-				<Button className='hidden md:flex'>
+				<Button className='flex bg-white text-black'>
 					<IconPlus stroke={2} />
 						<p className=''>Create New</p>
 				</Button>

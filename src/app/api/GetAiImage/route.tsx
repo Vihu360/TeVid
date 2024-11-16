@@ -7,6 +7,8 @@ export async function POST(req: NextRequest) {
 		const body = await req.json();
 		const { prompt, width = 768, height = 768, model = 'flux', seed = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000 } = body;
 
+		console.log("image prompt", prompt)
+
 		if (!prompt) {
 			return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
 		}
