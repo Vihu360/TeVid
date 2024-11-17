@@ -128,8 +128,8 @@ const CreateNewVideo = () => {
 		imageList: [],
 		createdby: ""
 	});
-	const [playVideo, setPlayVideo] = useState(true);
-	const [videoId, setVideoId] = useState<number | null>(8);
+	const [playVideo, setPlayVideo] = useState(false);
+	const [videoId, setVideoId] = useState<number | null>();
 
 	const onHandleChange = (name: string, value: string) => {
 		console.log("name an dvalue ",name, value)
