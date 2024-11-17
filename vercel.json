@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/GetAiImage.js": {
+      "maxDuration": 60
+    },
+    "api/GetVideoVoice.js": {
+      "maxDuration": 60
+    },
+    "api/GetCaption.js": {
+      "maxDuration": 60
+    }
+  }
+}

@@ -52,8 +52,8 @@ const PageTwo = ({
 }: {
 	onUserSelect: (name: string, value: string) => void;
 	handleOnClick: () => void;
-loading: boolean;
-		onNext: () => void
+	loading: boolean;
+	onNext: () => void
 }) => (
 	<div className="w-full flex flex-col gap-2 rounded-xl md:border-2 bg-[#181C14] border-white px-4 md:px-10 h-full overflow-hidden">
 		{loading ? (
@@ -96,9 +96,9 @@ loading: boolean;
 				</div>
 			</div>
 		) : (
-				<div className="w-full flex flex-col min-h-full">
+			<div className="w-full flex flex-col min-h-full">
 				<div className="flex-grow">
-						<SelectStyle onUserSelect={onUserSelect} onNext={onNext} />
+					<SelectStyle onUserSelect={onUserSelect} onNext={onNext} />
 				</div>
 				<div className="sticky bottom-0 bg-[#181C14] py-4">
 					<div className="flex items-center justify-center">
@@ -132,7 +132,7 @@ const CreateNewVideo = () => {
 	const [videoId, setVideoId] = useState<number | null>();
 
 	const onHandleChange = (name: string, value: string) => {
-		console.log("name an dvalue ",name, value)
+		console.log("name an dvalue ", name, value)
 		setPropsData(() => ({
 			[name]: value,
 		}));
@@ -171,19 +171,19 @@ const CreateNewVideo = () => {
 
 		setLoading(true);
 
-		console.log("type of propsData",typeof propsData);
+		console.log("type of propsData", typeof propsData);
 
 		if ('AI Image' in propsData) {
 			console.log("ai image")
-			 promptValueWithDuration = `write a script to generate ${videoDuration} video on topic : ${promptValue} along with ai image prompt in a ${propsData.selectStyle} format for each scene and give me result in JSON with Image prompt and contain text as field. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok`;
+			promptValueWithDuration = `write a script to generate ${videoDuration} video on topic : ${promptValue} along with ai image prompt in a ${propsData.selectStyle} format for each scene and give me result in JSON with Image prompt and contain text as field. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok`;
 		}
 		else {
 			console.log("gameplay")
 			promptValueWithDuration = `write a script to generate ${videoDuration} seconds video on topic : ${promptValue} give me result in JSON with  and that text as field. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok`;
 		}
 
-			try {
-				const response = await axios.post("/api/GetVideoScript", {
+		try {
+			const response = await axios.post("/api/GetVideoScript", {
 				prompt: promptValueWithDuration
 			});
 
@@ -198,20 +198,15 @@ const CreateNewVideo = () => {
 			await fetchVoiceThroughAi(combinedString);
 			await fetchImagethroughAi(data);
 
-			// Insert data into database once we have all the required data
-				if (allData.audioUrl && allData.caption.length > 0 && allData.imageList.length > 0) {
-				console.log("all data loaded")
-				await setVideoDataToDb();
-			} else {
-				console.log("the data has not loaded all yet")
-			}
+			console.log("completed fetchvideoscript")
 
 		} catch (error) {
 			const axiosError = error as AxiosError;
-				console.log(axiosError.response?.data);
-				setLoading(false);
+			console.log(axiosError.response?.data);
+			setLoading(false);
 		}
 	};
+
 
 	const fetchCaptionThroughAi = async (publicUrl: string) => {
 		try {
@@ -223,11 +218,14 @@ const CreateNewVideo = () => {
 				...prev,
 				caption: response.data.transcript.words
 			}));
+			console.log("completed audioscript")
+
 		} catch (error) {
 			const axiosError = error as AxiosError;
 			console.log(axiosError.response?.data);
 		}
 	};
+
 
 	const fetchImagethroughAi = async (data: VideoScript[]) => {
 		try {
@@ -242,7 +240,6 @@ const CreateNewVideo = () => {
 			console.log("responses", responses);
 			console.log("publicUrls", publicUrls);
 
-
 			setAllData((prev) => ({
 				...prev,
 				imageList: publicUrls,
@@ -254,6 +251,7 @@ const CreateNewVideo = () => {
 			setLoading(false);
 		}
 	};
+
 
 	const setVideoDataToDb = async () => {
 		try {
