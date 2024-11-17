@@ -12,55 +12,43 @@ interface Caption {
 	end: number;
 }
 
-interface AllVideoTypes {
+export interface AllVideoTypes {
 	videoScript: VideoScript[];
 	audioUrl: string;
 	caption: Caption[];
 	imageList: string[];
-	createdby: string;
 }
 
-// Define props interface for the component
-interface RemotionVideoProps {
-	videoData?: AllVideoTypes;
-}
-
-// Update component to use props interface
-const RemotionVideo: React.FC<RemotionVideoProps> = ({ videoData }) => {
+// Component now takes props directly as an object, not as a parameter
+const RemotionVideo = (props: { allVideoData: AllVideoTypes }) => {
 	const { fps } = useVideoConfig();
 	const frame = useCurrentFrame();
-
-	// Handle case when videoData is undefined
-	if (!videoData) {
-		return (
-			<AbsoluteFill className="bg-black flex items-center justify-center text-white">
-				<div>No video data available.</div>
-			</AbsoluteFill>
-		);
-	}
+	const { allVideoData } = props;
 
 	// Calculate total duration based on the last caption's end time
-	const totalDuration = videoData.caption.length > 0
-		? (videoData.caption[videoData.caption.length - 1].end / 1000) * fps
+	const totalDuration = allVideoData.caption.length > 0
+		? (allVideoData.caption[allVideoData.caption.length - 1].end / 1000) * fps + 5
 		: 1;
 
 	// Calculate how long each image should be displayed
-	const durationPerImage = videoData.imageList.length > 0
-		? totalDuration / videoData.imageList.length
+	const durationPerImage = allVideoData.imageList.length > 0
+		? totalDuration / allVideoData.imageList.length
 		: 0;
 
 	// Get current caption based on video time
 	const getCurrentCaptions = () => {
+		// Convert current frame to milliseconds (using fps instead of hardcoded 30)
 		const currentTimeVideo = (frame / fps) * 1000;
 
-		const currentCaption = videoData.caption.find(
+		// Find the caption that should be displayed at current time
+		const currentCaption = allVideoData.caption.find(
 			(word) => currentTimeVideo >= word.start && currentTimeVideo <= word.end
 		);
 
 		return currentCaption ? currentCaption.text : "";
 	};
 
-	if (!videoData.caption.length || !videoData.imageList.length) {
+	if (!allVideoData.caption.length || !allVideoData.imageList.length) {
 		return (
 			<AbsoluteFill className="bg-black flex items-center justify-center text-white">
 				<div>No video data available.</div>
@@ -70,16 +58,19 @@ const RemotionVideo: React.FC<RemotionVideoProps> = ({ videoData }) => {
 
 	return (
 		<AbsoluteFill className="bg-black">
-			{videoData.audioUrl && (
-				<Audio src={videoData.audioUrl} />
+			{/* Audio Track */}
+			{allVideoData.audioUrl && (
+				<Audio src={allVideoData.audioUrl} />
 			)}
 
-			{videoData.imageList.map((image, index) => (
+			{/* Image Sequences */}
+			{allVideoData.imageList.map((image, index) => (
 				<Sequence
 					key={`image-sequence-${index}`}
 					from={index * durationPerImage}
 					durationInFrames={durationPerImage}
 				>
+					{/* Background Image */}
 					<AbsoluteFill>
 						<Img
 							src={image}
@@ -91,12 +82,14 @@ const RemotionVideo: React.FC<RemotionVideoProps> = ({ videoData }) => {
 						/>
 					</AbsoluteFill>
 
+					{/* Semi-transparent Overlay */}
 					<AbsoluteFill
 						style={{
 							backgroundColor: 'rgba(0, 0, 0, 0.4)',
 						}}
 					/>
 
+					{/* Caption Text */}
 					<AbsoluteFill className="flex items-center justify-center">
 						<div
 							className="absolute bottom-20 text-white text-2xl font-bold px-8 py-4 rounded text-center uppercase"
@@ -113,5 +106,6 @@ const RemotionVideo: React.FC<RemotionVideoProps> = ({ videoData }) => {
 		</AbsoluteFill>
 	);
 };
+
 
 export default RemotionVideo;

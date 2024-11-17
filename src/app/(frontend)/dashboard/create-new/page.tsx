@@ -128,8 +128,8 @@ const CreateNewVideo = () => {
 		imageList: [],
 		createdby: ""
 	});
-	const [playVideo, setPlayVideo] = useState(false);
-	const [videoId, setVideoId] = useState<number | null>();
+	const [playVideo, setPlayVideo] = useState(true);
+	const [videoId, setVideoId] = useState<number | null>(8);
 
 	const onHandleChange = (name: string, value: string) => {
 		console.log("name an dvalue ",name, value)
@@ -199,8 +199,11 @@ const CreateNewVideo = () => {
 			await fetchImagethroughAi(data);
 
 			// Insert data into database once we have all the required data
-			if (allData.audioUrl && allData.caption.length > 0 && allData.imageList.length > 0) {
+				if (allData.audioUrl && allData.caption.length > 0 && allData.imageList.length > 0) {
+				console.log("all data loaded")
 				await setVideoDataToDb();
+			} else {
+				console.log("the data has not loaded all yet")
 			}
 
 		} catch (error) {
@@ -263,6 +266,8 @@ const CreateNewVideo = () => {
 
 			const userEmail = findUserEmail?.email ?? "";
 
+			console.log("mail", userEmail)
+
 			const result = await db.insert(videoData).values({
 				videoScript: allData.videoScript,
 				audioFileUrl: allData.audioUrl,
@@ -270,6 +275,8 @@ const CreateNewVideo = () => {
 				imageList: allData.imageList,
 				createdby: userEmail
 			}).returning({ id: videoData.id });
+
+			console.log("data set fully")
 
 			setVideoId(result[0].id);
 			setPlayVideo(true);

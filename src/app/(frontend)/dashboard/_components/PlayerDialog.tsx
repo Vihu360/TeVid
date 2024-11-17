@@ -76,6 +76,7 @@ const PlayerDialog = ({ playVideo, videoId }: PlayDialogType) => {
 
 	}
 
+
 	console.log(" all video data", allVideoData)
 
 	const fps = 30
@@ -84,29 +85,41 @@ const PlayerDialog = ({ playVideo, videoId }: PlayDialogType) => {
 		? allVideoData.caption[allVideoData.caption.length - 1].end / 1000 * fps
 		: 1;
 
+	const totalDurationWithTwoSecond = totalDuration + 5
+
 	return (
-		<Dialog open={openDialog}>
+		<Dialog open={openDialog} onOpenChange={setOpenDialog}>
 			<DialogContent className=' w-full max-w-3xl'>
 				<DialogHeader>
 					<DialogTitle className="text-3xl my-5 text-black ">Your Video is ready !</DialogTitle>
 					<DialogDescription>
 					</DialogDescription>
-					<div className='md:flex gap-10 justify-between items-start '>
+					<div className='m md:flex-row flex flex-col gap-10 justify-between  items-center md:items-end '>
 						<Player
 							component={RemotionVideo}
-							durationInFrames={Number(totalDuration.toFixed(0))}
+							durationInFrames={Number(totalDurationWithTwoSecond.toFixed(0))}
 							compositionWidth={280}
 							compositionHeight={450}
 							fps={30}
 							controls={true}
-							inputProps={
-								{
-									...allVideoData,
-								}
-							}
+							inputProps={{
+								allVideoData: {
+									videoScript: allVideoData.videoScript,
+									audioUrl: allVideoData.audioUrl,
+									caption: allVideoData.caption,
+									imageList: allVideoData.imageList,
+								},
+							}}
 						/>
-						<div className=' w-1/2'>
-							<Button className=' w-full'>Export</Button>
+						<div className='w-full md:w-1/2 flex flex-col gap-3'>
+
+							<div className=' w-full flex flex-col justify-center items-center gap-3'>
+								<Button className=' w-full'>Export video 360p ( coming soon )</Button>
+								<Button className=' w-full'>Export video 720p ( coming soon )</Button>
+							</div>
+
+							<p className=' w-full text-center text-sm text-red-600 hover:underline hover:underline-offset-2 cursor-pointer'>Facing issues ? </p>
+
 						</div>
 					</div>
 				</DialogHeader>
