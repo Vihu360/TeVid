@@ -48,8 +48,6 @@ const AuthPage = () => {
 					password: formData.password
 				});
 
-				console.log(signUpResponse.data)
-
 				toast({
 					title: "Success",
 					description: signUpResponse.data.message,
@@ -61,8 +59,6 @@ const AuthPage = () => {
 
 				const email = formData.email;
 				const password = formData.password;
-
-				console.log(email, password)
 
 				const signInResponse = await axios.post("/api/SignIn", { email, password });
 

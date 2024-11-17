@@ -130,9 +130,10 @@ const CreateNewVideo = () => {
 	});
 	const [playVideo, setPlayVideo] = useState(false);
 	const [videoId, setVideoId] = useState<number | null>();
+	const [videoScriptState, setVideoScriptState] = useState<VideoScript[]>([]);
+	const [audioUrlState, setAudioUrlState] = useState<string>("");
 
 	const onHandleChange = (name: string, value: string) => {
-		console.log("name an dvalue ", name, value)
 		setPropsData(() => ({
 			[name]: value,
 		}));
@@ -146,7 +147,7 @@ const CreateNewVideo = () => {
 
 			const publicUrl = response.data.downloadAudioFileSupabase.data.publicUrl;
 
-			fetchCaptionThroughAi(publicUrl);
+			setAudioUrlState(publicUrl)
 
 			setAllData(prev => ({
 				...prev,
@@ -171,14 +172,10 @@ const CreateNewVideo = () => {
 
 		setLoading(true);
 
-		console.log("type of propsData", typeof propsData);
-
 		if ('AI Image' in propsData) {
-			console.log("ai image")
 			promptValueWithDuration = `write a script to generate ${videoDuration} video on topic : ${promptValue} along with ai image prompt in a ${propsData.selectStyle} format for each scene and give me result in JSON with Image prompt and contain text as field. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok`;
 		}
 		else {
-			console.log("gameplay")
 			promptValueWithDuration = `write a script to generate ${videoDuration} seconds video on topic : ${promptValue} give me result in JSON with  and that text as field. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok`;
 		}
 
@@ -188,17 +185,13 @@ const CreateNewVideo = () => {
 			});
 
 			const data: VideoScript[] = response.data.result;
-			const combinedString = data.map(item => item.text).join(' ');
+
+			setVideoScriptState(data);
 
 			setAllData(prev => ({
 				...prev,
 				videoScript: data
 			}));
-
-			await fetchVoiceThroughAi(combinedString);
-			await fetchImagethroughAi(data);
-
-			console.log("completed fetchvideoscript")
 
 		} catch (error) {
 			const axiosError = error as AxiosError;
@@ -218,7 +211,6 @@ const CreateNewVideo = () => {
 				...prev,
 				caption: response.data.transcript.words
 			}));
-			console.log("completed audioscript")
 
 		} catch (error) {
 			const axiosError = error as AxiosError;
@@ -237,7 +229,6 @@ const CreateNewVideo = () => {
 
 			const publicUrls = responses.map((response) => response.data.publicUrl);
 
-			console.log("responses", responses);
 			console.log("publicUrls", publicUrls);
 
 			setAllData((prev) => ({
@@ -285,6 +276,32 @@ const CreateNewVideo = () => {
 			throw error; // Re-throw to handle in the calling function if needed
 		}
 	};
+
+	useEffect(() => {
+
+		const data = videoScriptState;
+
+		// fetch audio
+
+		const combinedString = data.map(item => item.text).join(' ');
+		console.log("combined string for audio", combinedString);
+
+		fetchVoiceThroughAi(combinedString);
+
+		// fetch image
+
+		fetchImagethroughAi(data);
+
+
+	}, [videoScriptState])
+
+	useEffect(() => {
+
+		const publicUrl = audioUrlState;
+
+		fetchCaptionThroughAi(publicUrl);
+
+	}, [audioUrlState])
 
 	useEffect(() => {
 		if (allData.audioUrl && allData.caption.length > 0 && allData.imageList.length > 0 && allData.videoScript.length > 0) {

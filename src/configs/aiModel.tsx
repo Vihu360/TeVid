@@ -7,7 +7,7 @@ const model = genAI.getGenerativeModel({
 	model: "gemini-1.5-flash",
 });
 
-console.log("api key hitting", apiKey)
+console.log("gemini api key hitting")
 
 const generationConfig = {
 	temperature: 1,
