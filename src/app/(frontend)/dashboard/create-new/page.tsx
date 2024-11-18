@@ -1,15 +1,18 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SelectStyle from "./_components/SelectStyle";
 import { PageOne } from "./_components/PageOne";
 import axios, { AxiosError } from 'axios';
 import { Skeleton } from "@/components/ui/skeleton";
 import { db } from "@/configs/db";
-import { videoData } from "@/configs/schema";
+import { Users, videoData } from "@/configs/schema";
 import { verifyRefreshToken } from "@/configs/auth-utilis";
 import PlayerDialog from "../_components/PlayerDialog";
+import { userDataDetailsContext } from "@/app/_context/userDataDetailsContext";
+import { eq } from "drizzle-orm";
+import { useToast } from "@/hooks/use-toast";
 
 // Define TypeScript interfaces
 interface VideoScript {
@@ -133,6 +136,8 @@ const CreateNewVideo = () => {
 	const [videoScriptState, setVideoScriptState] = useState<VideoScript[]>([]);
 	const [audioUrlState, setAudioUrlState] = useState<string>("");
 
+	const { toast } = useToast();
+
 	const onHandleChange = (name: string, value: string) => {
 		setPropsData(() => ({
 			[name]: value,
@@ -140,6 +145,12 @@ const CreateNewVideo = () => {
 	};
 
 	const fetchVoiceThroughAi = async (combinedString: string) => {
+
+		if (!combinedString) {
+			console.log("Empty text provided for voice generation");
+			return;
+		}
+
 		try {
 			const response = await axios.post("/api/GetVideoVoice", {
 				promptText: combinedString
@@ -160,6 +171,17 @@ const CreateNewVideo = () => {
 	};
 
 	const fetchVideoScriptThroughAi = async () => {
+
+		if (userDetail && userDetail.credits !== null && userDetail.credits !== undefined && userDetail.credits <= 0) {
+			console.log("Insufficient credits. Operation aborted.");
+			return toast({
+				title: "Insufficient credits",
+				description: "You don't have enough credits to generate a video.",
+				variant: "destructive"
+			})
+		}
+
+		console.log("credits are available");
 
 		let promptValueWithDuration = ""
 
@@ -196,6 +218,11 @@ const CreateNewVideo = () => {
 		} catch (error) {
 			const axiosError = error as AxiosError;
 			console.log(axiosError.response?.data);
+			toast({
+				title: "Uh hoo.. Something went wrong",
+				description: "Please try again later",
+				variant: "destructive"
+			})
 			setLoading(false);
 		}
 	};
@@ -214,6 +241,11 @@ const CreateNewVideo = () => {
 
 		} catch (error) {
 			const axiosError = error as AxiosError;
+			toast({
+				title: "Uh hoo.. Something went wrong",
+				description: "Please try again later",
+				variant: "destructive"
+			})
 			console.log(axiosError.response?.data);
 		}
 	};
@@ -238,6 +270,11 @@ const CreateNewVideo = () => {
 
 		} catch (error) {
 			console.error("Error generating images:", error);
+			toast({
+				title: "Uh hoo.. Something went wrong",
+				description: "Please try again later",
+				variant: "destructive"
+			})
 		} finally {
 			setLoading(false);
 		}
@@ -273,7 +310,12 @@ const CreateNewVideo = () => {
 			console.log('Successfully inserted data into database', allData);
 		} catch (error) {
 			console.error("Error inserting data into database:", error);
-			throw error; // Re-throw to handle in the calling function if needed
+			toast({
+				title: "Uh hoo.. Something went wrong",
+				description: "Please try again later",
+				variant: "destructive"
+			})
+			throw error;
 		}
 	};
 
@@ -281,33 +323,60 @@ const CreateNewVideo = () => {
 
 		const data = videoScriptState;
 
-		// fetch audio
+		if (videoScriptState.length > 0) {
 
-		const combinedString = data.map(item => item.text).join(' ');
-		console.log("combined string for audio", combinedString);
+			const combinedString = data.map(item => item.text).join(' ');
+			console.log("combined string for audio", combinedString);
 
-		fetchVoiceThroughAi(combinedString);
+			fetchVoiceThroughAi(combinedString);
 
-		// fetch image
+			// fetch image
 
-		fetchImagethroughAi(data);
+			fetchImagethroughAi(data);
+
+		}
 
 
 	}, [videoScriptState])
 
 	useEffect(() => {
 
-		const publicUrl = audioUrlState;
+		if (audioUrlState !== "") {
 
-		fetchCaptionThroughAi(publicUrl);
+			const publicUrl = audioUrlState;
+			fetchCaptionThroughAi(publicUrl);
+
+		}
 
 	}, [audioUrlState])
 
 	useEffect(() => {
 		if (allData.audioUrl && allData.caption.length > 0 && allData.imageList.length > 0 && allData.videoScript.length > 0) {
 			setVideoDataToDb();
+			updateCredits()
 		}
 	}, [allData]);
+
+	const { userDetail } = useContext(userDataDetailsContext);
+
+	const updateCredits = async () => {
+
+		// update the credits
+
+		const userCredits = userDetail?.credits
+
+
+		if (userCredits !== null && userCredits !== undefined) {
+			await db.update(Users).set({ credits: userCredits - 5 }).where(eq(Users.email, userDetail?.email ?? '')).execute();
+			toast({
+				title: "Success",
+				description: "5 Credits deducted successfully",
+			})
+		} else {
+			console.error("User credits is null or undefined");
+		}
+
+	}
 
 	return (
 		<div className="">

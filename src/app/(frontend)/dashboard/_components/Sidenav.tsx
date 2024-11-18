@@ -1,10 +1,11 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { IconGauge, IconPlus, IconUser, IconSettings, IconStar, IconAccessPoint, IconBrandAppgallery, IconMessage2, IconMoneybag } from '@tabler/icons-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { userDataDetailsContext } from '@/app/_context/userDataDetailsContext';
 
 const iconMap1 = {
 	dashboard: IconGauge,
@@ -22,8 +23,11 @@ const iconMap2 = {
 };
 
 const Sidenav = () => {
-	const [creditRemain] = useState(0);
+
+	const { userDetail } = useContext(userDataDetailsContext);
 	const path = usePathname();
+
+	const userCredits = userDetail?.credits
 
 	const menu = [
 		{ id: 1, name: 'Dashboard', href: '/dashboard', icon: 'dashboard' },
@@ -85,7 +89,7 @@ const Sidenav = () => {
 
 			<div className='bg-gray-700 p-2 text-sm rounded-xl flex items-center justify-between px-3'>
 				<p className='text-gray-200'>Credits Remaining</p>
-				<p className={`${creditRemain > 20 ? 'text-gray-200' : 'text-red-400'} flex items-center justify-center`}>{creditRemain}</p>
+				<p className={`${ userCredits && userCredits >19 ? 'text-gray-200' : 'text-red-600' } flex items-center justify-center`}>{ userCredits }</p>
 			</div>
 		</div>
 	);

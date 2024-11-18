@@ -35,7 +35,6 @@ export async function POST(req: NextRequest) {
 				const user: User = {
 					id: existingUserCheck[0].id,
 					email: existingUserCheck[0].email,
-					role: 'user',
 				};
 
 				const accessToken = generateAccessToken(user);
@@ -80,7 +79,7 @@ export async function POST(req: NextRequest) {
 				return Response.json({ message: 'Please Sign Up again, your account is not verified' }, { status: 400 });
 			}
 		} else {
-			return NextResponse.json({  message: 'Incorrect Email or password' }, { status: 400 });
+			return NextResponse.json({ message: 'Incorrect Email or password' }, { status: 400 });
 		}
 
 	} catch (error) {

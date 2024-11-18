@@ -12,6 +12,7 @@ const Dashboard = () => {
 
 
 	return (
+
 		<div className=''>
 
 			<div className='flex justify-between items-center md:px-16 px-7  pt-8 '>

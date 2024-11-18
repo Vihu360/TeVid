@@ -1,4 +1,4 @@
-import { pgTable, boolean, serial, varchar, json, timestamp } from "drizzle-orm/pg-core"
+import { pgTable, boolean, serial, varchar, json, integer, timestamp } from "drizzle-orm/pg-core"
 
 export const Users = pgTable('users', {
 	id: serial('id').primaryKey(),
@@ -11,6 +11,7 @@ export const Users = pgTable('users', {
 	verifyCode: varchar('verifyCode'),
 	verifyCodeExpires: timestamp('verifyCodeExpires'),
 	subs: varchar('subs').notNull().default('free'),
+	credits: integer('credits').default(20)  // 20 credits will be 4 videos
 })
 
 

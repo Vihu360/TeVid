@@ -115,8 +115,6 @@ export const PageOne: React.FC<PageOneProps> = ({
 		setPromptValue(PRESET_PROMPTS[index - 1].prompt);
 	};
 
-	console.log("prompt", promptValue)
-
 	return (
 		<div className="w-11/12 h-full bg-[#181C14] text-gray-100">
 			<div className=" w-full mx-auto p-5 flex flex-col gap-2 border rounded-xl border-white">

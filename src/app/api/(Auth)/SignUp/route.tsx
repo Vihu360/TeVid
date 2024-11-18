@@ -64,7 +64,8 @@ export async function POST(req: NextRequest) {
 				email: email,
 				password: hashedPassword,
 				verifyCodeExpires: expiryDate,
-				verifyCode: verifyCode
+				verifyCode: verifyCode,
+				credits: 20
 
 			}).execute();
 

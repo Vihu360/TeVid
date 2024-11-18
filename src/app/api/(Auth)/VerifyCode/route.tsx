@@ -35,7 +35,6 @@ export async function POST(req: NextRequest) {
 		const user: User = {
 			id: existingUser[0].id,
 			email: existingUser[0].email,
-			role: 'user',
 		};
 
 		const accessToken = generateAccessToken(user);
