@@ -14,6 +14,7 @@ import { userDataDetailsContext } from "@/app/_context/userDataDetailsContext";
 import { eq } from "drizzle-orm";
 import { useToast } from "@/hooks/use-toast";
 
+
 // Define TypeScript interfaces
 interface VideoScript {
 	text: string;
@@ -135,6 +136,7 @@ const CreateNewVideo = () => {
 	const [videoId, setVideoId] = useState<number | null>();
 	const [videoScriptState, setVideoScriptState] = useState<VideoScript[]>([]);
 	const [audioUrlState, setAudioUrlState] = useState<string>("");
+	const [imageUrlState, setImageUrlState] = useState<string[]>([]);
 
 	const { toast } = useToast();
 
@@ -179,6 +181,7 @@ const CreateNewVideo = () => {
 				description: "You don't have enough credits to generate a video.",
 				variant: "destructive"
 			})
+			setLoading(false)
 		}
 
 		console.log("credits are available");
@@ -229,6 +232,9 @@ const CreateNewVideo = () => {
 
 
 	const fetchCaptionThroughAi = async (publicUrl: string) => {
+
+		setLoading(true);
+
 		try {
 			const response = await axios.post("/api/GetCaption", {
 				audioFileUrl: publicUrl
@@ -252,6 +258,8 @@ const CreateNewVideo = () => {
 
 
 	const fetchImagethroughAi = async (data: VideoScript[]) => {
+
+		setLoading(true);
 		try {
 			const responses = await Promise.all(
 				data.map((item) =>
@@ -259,14 +267,13 @@ const CreateNewVideo = () => {
 				)
 			);
 
-			const publicUrls = responses.map((response) => response.data.publicUrl);
+			console.log("responses images", responses);
 
-			console.log("publicUrls", publicUrls);
+			const imageUrls = responses.map(item => item.data.GeneratedImageUrl);
 
-			setAllData((prev) => ({
-				...prev,
-				imageList: publicUrls,
-			}));
+			console.log("publicUrls", imageUrls);
+
+			setImageUrlState((prev) => [...prev, ...imageUrls]);
 
 		} catch (error) {
 			console.error("Error generating images:", error);
@@ -282,6 +289,9 @@ const CreateNewVideo = () => {
 
 
 	const setVideoDataToDb = async () => {
+
+		setLoading(true);
+
 		try {
 
 			const response = await axios.get('/api/Token');
@@ -305,6 +315,7 @@ const CreateNewVideo = () => {
 			console.log("data set fully")
 
 			setVideoId(result[0].id);
+			setLoading(false);
 			setPlayVideo(true);
 
 			console.log('Successfully inserted data into database', allData);
@@ -315,9 +326,50 @@ const CreateNewVideo = () => {
 				description: "Please try again later",
 				variant: "destructive"
 			})
+			setLoading(false);
 			throw error;
 		}
 	};
+
+	const uploadImageToSupabase = async () => {
+
+		setLoading(true);
+
+		try {
+			const response = await axios.post("/api/SupaBaseDBSaveImg", imageUrlState );
+
+			console.log("public urls", response)
+
+			const publicUrls = response.data.publicUrls;
+
+			console.log("public urls", publicUrls)
+
+			setAllData((prev) => ({
+			  ...prev,
+			  imageList: publicUrls,
+			}));
+
+		} catch (error) {
+
+			console.log(error)
+
+			toast({
+				title: "Uh hoo.. Something went wrong",
+				description: "Please try again later",
+				variant: "destructive"
+			})
+
+		}
+
+	};
+
+	useEffect(() => {
+
+		if (imageUrlState.length > 0) {
+			console.log(" image state ", imageUrlState);
+			uploadImageToSupabase();
+		}
+	}, [imageUrlState])
 
 	useEffect(() => {
 
@@ -351,9 +403,11 @@ const CreateNewVideo = () => {
 	}, [audioUrlState])
 
 	useEffect(() => {
+
+		console.log("image list db save",allData.imageList)
 		if (allData.audioUrl && allData.caption.length > 0 && allData.imageList.length > 0 && allData.videoScript.length > 0) {
 			setVideoDataToDb();
-			updateCredits()
+			updateCredits();
 		}
 	}, [allData]);
 
