@@ -19,7 +19,7 @@ interface SelectStyleProps {
 
 const SelectStyle: React.FC<SelectStyleProps> = ({ onUserSelect, onNext }) => {
 	const [selectedStyle, setSelectedStyle] = useState<string>('');
-	const [selectedSection, setSelectedSection] = useState<'AI Image' | 'Gameplay' | ''>('');
+	const [selectedSection, setSelectedSection] = useState<'AI_Image' | 'Gameplay' | ''>('');
 
 	const styleOptions: StyleOption[] = useMemo(
 		() => [
@@ -45,7 +45,7 @@ const SelectStyle: React.FC<SelectStyleProps> = ({ onUserSelect, onNext }) => {
 		[]
 	);
 
-	const handleStyleSelect = (styleName: string, section: 'AI Image' | 'Gameplay') => {
+	const handleStyleSelect = (styleName: string, section: 'AI_Image' | 'Gameplay') => {
 		setSelectedStyle(styleName);
 		setSelectedSection(section);
 		onUserSelect(section, styleName);
@@ -70,14 +70,14 @@ const SelectStyle: React.FC<SelectStyleProps> = ({ onUserSelect, onNext }) => {
 						key={index}
 						className={`
               relative transform transition-all duration-300 ease-in-out
-              ${selectedSection === 'AI Image' && selectedStyle === style.name
+              ${selectedSection === 'AI_Image' && selectedStyle === style.name
 								? 'ring-2 ring-white rounded-md'
 								: 'hover:scale-105'
 							}
             `}
 					>
 						<button
-							onClick={() => handleStyleSelect(style.name, 'AI Image')}
+							onClick={() => handleStyleSelect(style.name, 'AI_Image')}
 							className="w-full focus:outline-none"
 						>
 							<div className="overflow-hidden rounded-t-md">

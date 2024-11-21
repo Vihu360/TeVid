@@ -140,6 +140,7 @@ const CreateNewVideo = () => {
 
 	const { toast } = useToast();
 
+
 	const onHandleChange = (name: string, value: string) => {
 		setPropsData(() => ({
 			[name]: value,
@@ -174,14 +175,22 @@ const CreateNewVideo = () => {
 
 	const fetchVideoScriptThroughAi = async () => {
 
+		const timeoutId = setTimeout(() => {
+			console.warn('Function "fetchvideoscript" took longer than 10 seconds.');
+			// Add your desired handling for long execution here, e.g., show a warning, retry, etc.
+		}, 10000);
+
+
 		if (userDetail && userDetail.credits !== null && userDetail.credits !== undefined && userDetail.credits <= 0) {
 			console.log("Insufficient credits. Operation aborted.");
-			return toast({
+
+			toast({
 				title: "Insufficient credits",
 				description: "You don't have enough credits to generate a video.",
 				variant: "destructive"
 			})
 			setLoading(false)
+			return
 		}
 
 		console.log("credits are available");
@@ -197,8 +206,11 @@ const CreateNewVideo = () => {
 
 		setLoading(true);
 
-		if ('AI Image' in propsData) {
-			promptValueWithDuration = `write a script to generate ${videoDuration} video on topic : ${promptValue} along with ai image prompt in a ${propsData.selectStyle} format for each scene and give me result in JSON with Image prompt and contain text as field. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok`;
+		console.log("propsData", propsData)
+
+
+		if ('AI_Image' in propsData) {
+			promptValueWithDuration = `write a script to generate ${videoDuration} video on topic : ${promptValue} along with ai image prompt in a ${propsData.AI_Image} format for each scene and give me result in JSON with Image prompt and contain text as field. The maxium image prompt will be 5 only and do not cross 960 text character. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok`;
 		}
 		else {
 			promptValueWithDuration = `write a script to generate ${videoDuration} seconds video on topic : ${promptValue} give me result in JSON with  and that text as field. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok`;
@@ -217,6 +229,8 @@ const CreateNewVideo = () => {
 				...prev,
 				videoScript: data
 			}));
+
+			clearTimeout(timeoutId);
 
 		} catch (error) {
 			const axiosError = error as AxiosError;
@@ -269,11 +283,13 @@ const CreateNewVideo = () => {
 
 			console.log("responses images", responses);
 
+
+
 			const imageUrls = responses.map(item => item.data.GeneratedImageUrl);
 
 			console.log("publicUrls", imageUrls);
 
-			setImageUrlState((prev) => [...prev, ...imageUrls]);
+			setImageUrlState(imageUrls);
 
 		} catch (error) {
 			console.error("Error generating images:", error);
@@ -333,6 +349,9 @@ const CreateNewVideo = () => {
 
 	const uploadImageToSupabase = async () => {
 
+		const startTime = performance.now(); // Start time measurement
+
+
 		setLoading(true);
 
 		try {
@@ -348,6 +367,13 @@ const CreateNewVideo = () => {
 			  ...prev,
 			  imageList: publicUrls,
 			}));
+
+			const endTime = performance.now(); // End time measurement
+			const elapsedTime = (endTime - startTime) / 1000; // Time in seconds
+
+			if (elapsedTime > 10) {
+				console.warn(`Function 'uploadImageToSupabase' took ${elapsedTime.toFixed(2)} seconds to complete.`);
+			}
 
 		} catch (error) {
 
@@ -408,6 +434,22 @@ const CreateNewVideo = () => {
 		if (allData.audioUrl && allData.caption.length > 0 && allData.imageList.length > 0 && allData.videoScript.length > 0) {
 			setVideoDataToDb();
 			updateCredits();
+
+			// Clear other related states
+			setVideoScriptState([]);
+			setAudioUrlState("");
+			setImageUrlState([]);
+			setPropsData({});
+			setPromptValue("");
+
+			// Clear all related states after successful operations
+			setAllData({
+				videoScript: [],
+				audioUrl: "",
+				caption: [],
+				imageList: [],
+				createdby: ""
+			});
 		}
 	}, [allData]);
 

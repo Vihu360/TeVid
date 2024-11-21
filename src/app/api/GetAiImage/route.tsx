@@ -3,13 +3,15 @@ import { NextResponse, NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
 
+	const startTime = performance.now(); // Start time measurement
+
 	try {
 		const { prompt } = await req.json();
 
 		console.log(prompt);
 
 		const replicate = new Replicate();
-		const input  = {
+		const input = {
 			prompt: prompt,
 			num_outputs: 1,
 		};
@@ -32,6 +34,13 @@ export async function POST(req: NextRequest) {
 			const imageResponse = await fetch(imageUrl);
 
 			const GeneratedImageUrl = imageResponse.url
+
+			const endTime = performance.now()
+			const elapsedTime = (endTime - startTime) / 1000 // Time in seconds
+
+			if (elapsedTime > 10) {
+				console.warn(`Function 'POST' took ${elapsedTime.toFixed(2)} seconds to complete.`);
+			}
 
 			return NextResponse.json({ message: 'Image generated successfully', GeneratedImageUrl }, { status: 200 });
 
