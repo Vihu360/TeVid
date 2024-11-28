@@ -21,7 +21,7 @@
     "@radix-ui/react-toast": "^1.2.2",
     "@react-email/components": "^0.0.28",
     "@remotion/cli": "4.0.229",
-    "@remotion/lambda": "4.0.230",
+    "@remotion/lambda": "4.0.229",
     "@supabase/supabase-js": "^2.46.1",
     "@tabler/icons-react": "^3.19.0",
     "assemblyai": "^4.8.0",

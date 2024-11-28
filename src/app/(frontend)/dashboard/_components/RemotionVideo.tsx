@@ -17,6 +17,8 @@ export interface AllVideoTypes {
 	audioUrl: string;
 	caption: Caption[];
 	imageList: string[];
+	videoList?: string[];
+	backgroundMusic?: string;
 }
 
 // Component now takes props directly as an object, not as a parameter

@@ -137,9 +137,9 @@ const CreateNewVideo = () => {
 	const [videoScriptState, setVideoScriptState] = useState<VideoScript[]>([]);
 	const [audioUrlState, setAudioUrlState] = useState<string>("");
 	const [imageUrlState, setImageUrlState] = useState<string[]>([]);
+	const [selectedVoiceId, setSelectedVoiceId] = useState<number | null>(null);
 
 	const { toast } = useToast();
-
 
 	const onHandleChange = (name: string, value: string) => {
 		setPropsData(() => ({
@@ -154,9 +154,12 @@ const CreateNewVideo = () => {
 			return;
 		}
 
+		console.log("inside function selected video", selectedVoiceId);
+
 		try {
 			const response = await axios.post("/api/GetVideoVoice", {
-				promptText: combinedString
+				promptText: combinedString,
+				voiceId: selectedVoiceId
 			});
 
 			const publicUrl = response.data.downloadAudioFileSupabase.data.publicUrl;
@@ -355,7 +358,7 @@ const CreateNewVideo = () => {
 		setLoading(true);
 
 		try {
-			const response = await axios.post("/api/SupaBaseDBSaveImg", imageUrlState );
+			const response = await axios.post("/api/SupaBaseDBSaveImg", imageUrlState);
 
 			console.log("public urls", response)
 
@@ -364,8 +367,8 @@ const CreateNewVideo = () => {
 			console.log("public urls", publicUrls)
 
 			setAllData((prev) => ({
-			  ...prev,
-			  imageList: publicUrls,
+				...prev,
+				imageList: publicUrls,
 			}));
 
 			const endTime = performance.now(); // End time measurement
@@ -430,7 +433,7 @@ const CreateNewVideo = () => {
 
 	useEffect(() => {
 
-		console.log("image list db save",allData.imageList)
+		console.log("image list db save", allData.imageList)
 		if (allData.audioUrl && allData.caption.length > 0 && allData.imageList.length > 0 && allData.videoScript.length > 0) {
 			setVideoDataToDb();
 			updateCredits();
@@ -493,6 +496,9 @@ const CreateNewVideo = () => {
 						promptValue={promptValue}
 						setPromptValue={setPromptValue}
 						onNext={() => setNext2(true)}
+						selectedVoiceId={selectedVoiceId}
+						setSelectedVoiceId={setSelectedVoiceId}
+
 					/>
 				)}
 

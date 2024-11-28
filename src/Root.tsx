@@ -1,7 +1,7 @@
 import React from 'react';
 import { Composition } from 'remotion';
-import RemotionVideo from '@/app/(frontend)/dashboard/_components/RemotionVideo';
-import type { AllVideoTypes } from '@/app/(frontend)/dashboard/_components/RemotionVideo';
+import RemotionVideo from './app/(frontend)/dashboard/_components/RemotionVideo';
+import type { AllVideoTypes } from './app/(frontend)/dashboard/_components/RemotionVideo';
 
 export const RemotionRoot: React.FC = () => {
 	const defaultVideoData: AllVideoTypes = {

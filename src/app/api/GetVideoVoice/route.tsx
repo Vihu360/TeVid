@@ -11,16 +11,17 @@ function generateUniqueFileName(): string {
 }
 
 export async function POST(request: NextRequest) {
-	const { promptText } = await request.json();
+	const { promptText, voiceId } = await request.json();
 
 	try {
 
-		console.log("prompt text in audio gen",promptText);
+		console.log("prompt text in audio gen", promptText);
+		console.log("VoiceId in audio gen", voiceId);
 
-		const result = await generateVoice(promptText);
+		const result = await generateVoice(promptText, voiceId);
 		const audioUrl = result.audioFile;
 
-		const bucketName = process.env.SUPABASE_BUCKET_NAME || ''
+		const bucketName = process.env.SUPABASE_BUCKET_NAME ?? ''
 		const fileName = generateUniqueFileName();
 
 		// Download and upload the audio file to Supabase

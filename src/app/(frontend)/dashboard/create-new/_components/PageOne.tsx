@@ -10,15 +10,17 @@ interface PageOneProps {
 	promptValue: string;
 	setPromptValue: React.Dispatch<React.SetStateAction<string>>;
 	onNext: () => void;
+	selectedVoiceId: number | null;
+	setSelectedVoiceId: React.Dispatch<React.SetStateAction<number | null>>
 }
 
 const VOICES = [
-	{ id: 1, name: 'Sarah', description: 'Warm & Professional', audioUrl: 'https://pxbywmzzuuwelsaccswz.supabase.co/storage/v1/object/public/craftersaAudio/audio_1731571736347_2895.mp3', style: 'American' },
-	{ id: 2, name: 'James', description: 'Deep & Authoritative', audioUrl: '/voices/james.mp3', style: 'American' },
-	{ id: 3, name: 'Emma', description: 'Young & Energetic', audioUrl: '/voices/emma.mp3', style: 'British' },
-	{ id: 4, name: 'Michael', description: 'Calm & Clear', audioUrl: '/voices/michael.mp3', style: 'Australian' },
-	{ id: 5, name: 'Aniket', description: 'Friendly & Natural', audioUrl: '/voices/sophie.mp3', style: 'Indian' },
-	{ id: 6, name: 'David', description: 'Confident & Dynamic', audioUrl: '/voices/david.mp3', style: 'Dynamic' },
+	{ id: 1, name: 'Natalie', description: 'Warm & Professional', audioUrl: '/voices/Natalie.mp3', style: 'American' },
+	{ id: 2, name: 'Terrell', description: 'Deep & Authoritative', audioUrl: '/voices/Terrell.mp3', style: 'American' },
+	{ id: 3, name: 'Kylie', description: 'Young & Calm', audioUrl: '/voices/Kylie.mp3', style: 'Australian' },
+	{ id: 4, name: 'Surya', description: 'Extra Deep', audioUrl: '/voices/Surya.mp3', style: 'Indian' },
+	{ id: 5, name: 'Freddie', description: 'Friendly & Natural', audioUrl: '/voices/Freddie.mp3', style: 'British' },
+	{ id: 6, name: 'Ruby', description: 'Confident & Dynamic', audioUrl: '/voices/Ruby.mp3', style: 'British' },
 ];
 
 const PRESET_PROMPTS = [
@@ -90,9 +92,10 @@ export const PageOne: React.FC<PageOneProps> = ({
 	setActiveButtonIndex,
 	promptValue,
 	setPromptValue,
-	onNext
+	onNext,
+	selectedVoiceId,
+	setSelectedVoiceId
 }) => {
-	const [selectedVoiceId, setSelectedVoiceId] = useState<number | null>(null);
 	const [playingVoiceId, setPlayingVoiceId] = useState<number | null>(null);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 
