@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Poppins } from "next/font/google"
-import { Toaster } from "@/components/ui/toaster"
-
+import { Poppins } from "next/font/google";
+import { Toaster } from "@/components/ui/toaster";
+import PayPalProvider from "./_components/PayPalProvider";
 
 export const metadata: Metadata = {
-  title: "CraftErsa | The Ai Short Video Generator",
-  description: "AI Video Generator which helps generating high qulity short videos from text for Reels, TikTok and Youtube Shorts",
+	title: "CraftErsa | The AI Short Video Generator",
+	description: "AI Video Generator which helps generate high-quality short videos from text for Reels, TikTok, and YouTube Shorts",
 };
 
 const poppins = Poppins({
@@ -15,18 +15,19 @@ const poppins = Poppins({
 });
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
 	return (
-			<html lang="en">
-      <body
-        className={poppins.className}
-			>
-				{children}
-				<Toaster />
-      </body>
-			</html>
-  );
+		
+		<html lang="en">
+			<body className={poppins.className}>
+				<PayPalProvider>
+					{children}
+					<Toaster />
+				</PayPalProvider>
+			</body>
+		</html>
+	);
 }

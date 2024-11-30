@@ -4,8 +4,12 @@ export async function GET(req: NextRequest) {
 
 	const token = req.cookies.get("refreshToken")?.value;
 
+	console.log("token",token)
+
 	if (!token) {
-		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 }); // Unauthorized
+		console.log("token not found");
+		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+		// Unauthorized
 	}
 
 	return NextResponse.json({ token });

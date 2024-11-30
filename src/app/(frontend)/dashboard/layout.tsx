@@ -16,9 +16,9 @@ interface DashboardLayoutProps { children: React.ReactNode }
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 	const [userDetail, setUserDetail] = useState<User | undefined>();
 
-	useEffect(() => { 
+	useEffect(() => {
 		getUserInfo();
-	}, [])
+	}, []);
 
 	const getUserInfo = async () => {
 		try {
