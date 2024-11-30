@@ -140,11 +140,12 @@ const PricingCard = ({
 		const user = await db.select().from(Users).where(eq(Users.email, userData)).execute();
 
 		if (user[0].credits !== null && user[0].credits !== undefined) {
-			await db.update(Users).set({ credits: user[0].credits - 5 }).where(eq(Users.email, user[0].email ?? '')).execute();
+			await db.update(Users).set({ credits: user[0].credits + 500 }).where(eq(Users.email, user[0].email ?? '')).execute();
 			toast({
 				title: "Success",
 				description: "500 Credits deducted successfully",
-			})
+			});
+			router.push("/dashboard");
 		} else {
 			console.error("User credits is null or undefined");
 		}

@@ -3,6 +3,8 @@ import "./globals.css";
 import { Poppins } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import PayPalProvider from "./_components/PayPalProvider";
+import { SpeedInsights } from '@vercel/speed-insights/next';
+
 
 export const metadata: Metadata = {
 	title: "CraftErsa | The AI Short Video Generator",
@@ -20,11 +22,12 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		
+
 		<html lang="en">
 			<body className={poppins.className}>
 				<PayPalProvider>
 					{children}
+					<SpeedInsights />
 					<Toaster />
 				</PayPalProvider>
 			</body>

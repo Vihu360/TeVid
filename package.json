@@ -26,6 +26,7 @@
     "@remotion/lambda": "4.0.229",
     "@supabase/supabase-js": "^2.46.1",
     "@tabler/icons-react": "^3.19.0",
+    "@vercel/speed-insights": "^1.1.0",
     "assemblyai": "^4.8.0",
     "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
