@@ -213,7 +213,7 @@ const CreateNewVideo = () => {
 
 
 		if ('AI_Image' in propsData) {
-			promptValueWithDuration = `write a script to generate ${videoDuration} video on topic : ${promptValue} along with ai image prompt in a ${propsData.AI_Image} format for each scene and give me result in JSON with Image prompt and contain text as field. The maxium image prompt will be 5 only and do not cross 960 text character. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok`;
+			promptValueWithDuration = `write a script to generate ${videoDuration} video on topic : ${promptValue} along with ai image prompt in a ${propsData.AI_Image} format for each scene and give me result in JSON with Image prompt and contain text as field. The maxium image prompt will be 5 only and do not cross 960 text character. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok. do not create any nfsw possible image prompt`;
 		}
 		else {
 			promptValueWithDuration = `write a script to generate ${videoDuration} seconds video on topic : ${promptValue} give me result in JSON with  and that text as field. do not give any starting like welcome to my channel or video. Create a unique and different each time,not repeated. use a proper hook to start the video to hold viewers on the shorts/tiktok`;

@@ -4,7 +4,7 @@ export const generateVoice = async (promtText?: string, voiceId?: number) => {
 
 	// Mapping for voiceId to API-specific values
 	const voiceMappings: { [key: number]: { voiceId: string; style: string; rate: number } } = {
-		1: { voiceId: 'en-US-natalie', style: 'promo', rate: 2 },
+		1: { voiceId: 'en-US-natalie', style: 'promo', rate: 1 },
 		2: { voiceId: 'en-US-terrell', style: 'Narration', rate: 6 },
 		3: { voiceId: 'en-AU-kylie', style: 'Conversational', rate: 1 },
 		4: { voiceId: 'en-IN-surya', style: 'Documentary', rate: 0 },
